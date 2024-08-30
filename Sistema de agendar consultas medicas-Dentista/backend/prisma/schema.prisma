@@ -1,0 +1,53 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Consultas {
+  id         String   @id @default(uuid())
+  sexo       String
+  telefono   String
+  citaId     String
+  doctorId   String
+  cita       Citas    @relation(fields: [citaId], references: [id])
+  doctor     Doctores @relation(fields: [doctorId], references: [id])
+}
+
+model Citas {
+  id                String   @id @default(uuid())
+  estado            EstadoCita
+  fecha             DateTime
+  hora              DateTime
+  fecha_nacimiento  DateTime
+  nombre_paciente   String
+  apellido_paciente String
+  correo            String
+  alergias          String
+  motivo_consulta   String
+  valoracion        Float
+  doctorId          String
+  consultas         Consultas[]
+  doctor            Doctores @relation(fields: [doctorId], references: [id])
+}
+
+model Doctores {
+  id            String      @id @default(uuid())
+  codigo_CM     Int
+  nombre        String
+  apellido      String
+  especialidad  String
+  citas         Citas[]
+  consultas     Consultas[]
+}
+
+enum EstadoCita {
+  pendiente
+  cancelada
+  realizada
+}
